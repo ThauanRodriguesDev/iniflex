@@ -2,28 +2,25 @@ package services;
 
 import entity.Funcionario;
 import entity.Pessoa;
-import repository.RepositorioFuncionario;
 
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
+import java.time.chrono.ChronoLocalDate;
 import java.time.temporal.TemporalField;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class ServicoFuncionario {
     private static final Scanner SCANNER = new Scanner(System.in);
 
     private static final LinkedList<Funcionario> funcionarios = new LinkedList<>();
-    private static final Map<String, Funcionario> funcoesFuncionarios = new HashMap<>();
+    private static final Map<String, Funcionario> funcoesFuncionarios = new TreeMap<>();
 
     public static void construirMenu(int operacao){
         switch (operacao){
@@ -100,15 +97,19 @@ public class ServicoFuncionario {
     private static void imprimirQuantidadeSalarioMinimoFuncionario(){
         System.out.println("Impressão Do Funcionário com sua quantidade de salário mínimo");
         funcionarios.forEach(x
-                -> System.out.println("---------------------\n" + "Funcionario: " + x.getNome()
-                + " Quantidade de Salário mínimo: " + (x.getSalario().divide(BigDecimal.valueOf(1212)))));
+                -> System.out.printf("---------------------\n" + "Funcionario: " + x.getNome()
+                + " Quantidade de Salário mínimo: %.2f\n", (x.getSalario().floatValue() / 1212.00)));
     }
 
     private static void imprimirMaiorSalarioEIdade(){
-        Funcionario funcionario = funcionarios.stream()
-                .max(Comparator.comparing(x -> x.getDataNascimento().getLong((TemporalField) DateFormat.Field.MILLISECOND)))
-                .get();
-
+        Funcionario funcionario = new Funcionario();
+        funcionario.setDataNascimento(LocalDate.now());
+        for (Funcionario func: funcionarios){
+            if(func.getDataNascimento().isBefore(ChronoLocalDate.from(funcionario.getDataNascimento()))){
+               funcionario.setDataNascimento(func.getDataNascimento());
+               funcionario.setNome(func.getNome());
+            }
+        }
         int ano = LocalDate.now().getYear() - funcionario.getDataNascimento().getYear();
 
         if (LocalDate.now().getDayOfYear() < funcionario.getDataNascimento().getDayOfYear()) {
