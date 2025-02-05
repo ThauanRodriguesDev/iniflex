@@ -4,10 +4,8 @@ import entity.Funcionario;
 import entity.Pessoa;
 
 import java.math.BigDecimal;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.chrono.ChronoLocalDate;
-import java.time.temporal.TemporalField;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +48,7 @@ public class ServicoFuncionario {
                         imprimirTodosFuncionarios();
                         break;
                     case 2:
+                        //POR CONTA DE SER UM MAP ELE NAO SALVA DUAS COISAS COM A MESMA CHAVE
                         imprimirFuncionariosPorFuncao();
                         break;
                     case 3:

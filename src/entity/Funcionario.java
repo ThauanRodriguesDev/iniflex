@@ -1,7 +1,6 @@
 package entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 public class Funcionario extends Pessoa{
     private BigDecimal salario;
