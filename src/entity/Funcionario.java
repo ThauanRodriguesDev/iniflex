@@ -4,16 +4,16 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public class Funcionario extends Pessoa{
-    private BigDecimal salário;
+    private BigDecimal salario;
     private String funcao;
 
     public Funcionario() {
     }
 
-    public Funcionario(String nome, LocalDate dataNascimento, String funcao, BigDecimal salário) {
+    public Funcionario(String nome, LocalDate dataNascimento, String funcao, BigDecimal salario) {
         super(nome, dataNascimento);
         this.funcao = funcao;
-        this.salário = salário;
+        this.salario = salario;
     }
 
     public String getFuncao() {
@@ -24,11 +24,12 @@ public class Funcionario extends Pessoa{
         this.funcao = funcao;
     }
 
-    public BigDecimal getSalário() {
-        return salário;
+    public BigDecimal getSalario() {
+        return salario;
     }
 
-    public void setSalário(BigDecimal salário) {
-        this.salário = salário;
+    public void setSalario(BigDecimal salario) {
+        this.salario = salario;
     }
+
 }

@@ -1,5 +1,4 @@
 package entity;
-
 import java.time.LocalDate;
 
 public abstract class Pessoa {
