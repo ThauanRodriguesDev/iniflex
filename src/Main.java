@@ -11,13 +11,15 @@ public class Main {
             produzirMenu();
             indice = Integer.parseInt(SCANNER.nextLine());
             ServicoFuncionario.construirMenu(indice);
-
         }
     }
     private static void produzirMenu(){
+        System.out.println("----------------------------");
         System.out.println("Digite o Numero da Operacão");
         System.out.println("1- Criar Funcionário");
         System.out.println("2- Excluir Funcionário");
         System.out.println("3- Ver Funcionários");
+        System.out.println("4- Aumentar Salários por porcentagem");
+        System.out.println("0- Finalizar");
     }
 }

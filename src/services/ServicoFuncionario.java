@@ -1,6 +1,7 @@
 package services;
 
 import entity.Funcionario;
+import entity.Pessoa;
 import repository.RepositorioFuncionario;
 
 import java.math.BigDecimal;
@@ -8,19 +9,21 @@ import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.temporal.TemporalField;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Scanner;
 
 public class ServicoFuncionario {
     private static final Scanner SCANNER = new Scanner(System.in);
-    private static RepositorioFuncionario repositorio;
 
-    public ServicoFuncionario(RepositorioFuncionario repositorio) {
-        ServicoFuncionario.repositorio = repositorio;
-    }
+    private static final LinkedList<Funcionario> funcionarios = new LinkedList<>();
+    private static final Map<String, Funcionario> funcoesFuncionarios = new HashMap<>();
 
     public static void construirMenu(int operacao){
         switch (operacao){
@@ -42,6 +45,7 @@ public class ServicoFuncionario {
                 System.out.println("5- Imprimir Salário do Funcionário");
                 System.out.println("6- Imprimir Quantidade de Salários Minimos dos Funcionários");
                 System.out.println("7- Imprimir Funcionário de Maior Idade");
+                System.out.println("8- Imprimir Soma de Todos Salários");
                 System.out.println("Qualquer outro numero- Voltar ao Menu inicial");
                 int indice = SCANNER.nextInt();
                 switch (indice) {
@@ -66,30 +70,42 @@ public class ServicoFuncionario {
                     case 7:
                         imprimirMaiorSalarioEIdade();
                         break;
-                    default:
+                    case 8:
+                        imprimirTotalSalarioFuncionario();
                         break;
                 }
+                break;
+            case 4:
+                aumentarSalarioPorPorcentagem();
                 break;
             default:
                 System.out.println("Opção Invalida insira novamente.");
         }
     }
 
+    private static void imprimirTotalSalarioFuncionario(){
+        float salario = 0;
+        for(Funcionario func: funcionarios){
+            salario += func.getSalario().floatValue();
+        }
+        System.out.println("O valor total dos salários é: " + salario);
+    }
+
     private static void imprimirSalarioFuncionario(){
         System.out.println("Impressão Do Funcionário com seu respectivo salário");
-        repositorio.getFuncionarios().forEach(x
+        funcionarios.forEach(x
                 -> System.out.println("---------------------\n" + "Funcionario: " + x.getNome() + " Salário: R$" + x.getSalario()));
     }
 
     private static void imprimirQuantidadeSalarioMinimoFuncionario(){
         System.out.println("Impressão Do Funcionário com sua quantidade de salário mínimo");
-        repositorio.getFuncionarios().forEach(x
+        funcionarios.forEach(x
                 -> System.out.println("---------------------\n" + "Funcionario: " + x.getNome()
                 + " Quantidade de Salário mínimo: " + (x.getSalario().divide(BigDecimal.valueOf(1212)))));
     }
 
     private static void imprimirMaiorSalarioEIdade(){
-        Funcionario funcionario = repositorio.getFuncionarios().stream()
+        Funcionario funcionario = funcionarios.stream()
                 .max(Comparator.comparing(x -> x.getDataNascimento().getLong((TemporalField) DateFormat.Field.MILLISECOND)))
                 .get();
 
@@ -107,41 +123,49 @@ public class ServicoFuncionario {
         int mes2 = SCANNER.nextInt();
 
         System.out.println("Funcionário Mês " + mes1);
-        repositorio.getFuncionarios().stream().filter(x -> x.getDataNascimento().getMonthValue() == mes1)
+        funcionarios.stream().filter(x -> x.getDataNascimento().getMonthValue() == mes1)
                 .forEach(x -> System.out.println("---------------------------\n" + "Nome do Funcionario " + x.getNome() + " Cargo: " + x.getFuncao()));
 
         System.out.println("Funcionário Mês " + mes2);
-        repositorio.getFuncionarios().stream().filter(x -> x.getDataNascimento().getMonthValue() == mes2)
+        funcionarios.stream().filter(x -> x.getDataNascimento().getMonthValue() == mes2)
                 .forEach(x -> System.out.println("--------------------------\n" + "Nome do Funcionario " + x.getNome() + " Cargo: " + x.getFuncao()));
     }
 
     private static void imprimirTodosFuncionarios(){
-        for(Funcionario repos: repositorio.getFuncionarios()){
+        for(Funcionario repos: funcionarios){
             System.out.println("------------------------------------");
             System.out.println("Nome do Funcionário: " + repos.getNome());
-            System.out.println("Data de nascimento " + repos.getDataNascimento()
-                    .format(DateTimeFormatter.ISO_LOCAL_DATE));
+            System.out.println("Data de nascimento " +
+                    repos.getDataNascimento().getDayOfMonth() + "/" +
+                    repos.getDataNascimento().getMonthValue() + "/" + repos.getDataNascimento().getYear());
             System.out.println("Função: " + repos.getFuncao());
             System.out.println("Salário: " + repos.getSalario());
         }
     }
     private static void imprimirTodosFuncionariosPorOrdemAlfabetica(){
-        List<Funcionario> listaOrdenada = repositorio.getFuncionarios().stream().sorted(Comparator.comparing(x -> x.getNome())).toList();
+        List<Funcionario> listaOrdenada = funcionarios.stream().sorted(Comparator.comparing(Pessoa::getNome)).toList();
         for(Funcionario repos: listaOrdenada){
             System.out.println("------------------------------------");
             System.out.println("Nome do Funcionário: " + repos.getNome());
-            System.out.println("Data de nascimento " + repos.getDataNascimento()
-                    .format(DateTimeFormatter.ISO_LOCAL_DATE));
+            System.out.println("Data de nascimento " +
+                    repos.getDataNascimento().getDayOfMonth() + "/" +
+                    repos.getDataNascimento().getMonthValue() + "/" + repos.getDataNascimento().getYear());
             System.out.println("Função: " + repos.getFuncao());
             System.out.println("Salário: " + repos.getSalario());
         }
     }
 
     private static void imprimirFuncionariosPorFuncao(){
-        repositorio.getFuncoesFuncionarios().forEach((x, v) ->
+        funcoesFuncionarios.forEach((x, v) ->
                 System.out.println("------------------------\n" + "Funcionario " + v.getNome() + " respectiva função: " + x));
     }
 
+    private static void aumentarSalarioPorPorcentagem(){
+        System.out.println("Digite a porcentagem que você quer aumentar");
+        double porcentagem = SCANNER.nextDouble();
+        funcionarios.forEach(x -> x.setSalario(x.getSalario().add(x.getSalario().multiply( BigDecimal.valueOf(porcentagem / 100)) )));
+        System.out.println("Porcentagem Aumentada de Todos Salários");
+    }
 
     private static void excluirFuncionario(){
         int contadorFalhas = 0;
@@ -150,7 +174,7 @@ public class ServicoFuncionario {
         String nome = SCANNER.nextLine();
 
 
-        long contadorNomes = repositorio.getFuncionarios().stream()
+        long contadorNomes = funcionarios.stream()
                         .filter(x -> Objects.equals(x.getNome().toLowerCase(), nome.toLowerCase())).count();
 
         if(contadorNomes < 1){
@@ -158,10 +182,10 @@ public class ServicoFuncionario {
             return;
         }
 
-        for(Funcionario func: repositorio.getFuncionarios()){
+        for(Funcionario func: funcionarios){
             if(nome.equalsIgnoreCase(func.getNome())){
-                repositorio.getFuncoesFuncionarios().remove(func.getFuncao(), func);
-                repositorio.getFuncionarios().remove(func);
+                funcoesFuncionarios.remove(func.getFuncao(), func);
+                funcionarios.remove(func);
                 contadorFalhas++;
             }
         }
@@ -175,6 +199,13 @@ public class ServicoFuncionario {
 
     private static void criarFuncionario(){
         Funcionario funcionario = new Funcionario();
+
+        System.out.println("Digite a função destinada ao Funcionário.");
+        String func = SCANNER.nextLine();
+        while(func.isBlank()){
+            func = SCANNER.nextLine();
+        }
+        funcionario.setFuncao(func);
 
         System.out.println("Digite o Nome do Funcionario");
         funcionario.setNome(SCANNER.nextLine());
@@ -195,14 +226,14 @@ public class ServicoFuncionario {
         }
         funcionario.setDataNascimento(LocalDate.of(ano, mes, dia));
 
+
+
         System.out.println("Digite o Salário do Funcionario");
         funcionario.setSalario(SCANNER.nextBigDecimal());
 
-        System.out.println("Digite a função destinada ao Funcionário.");
-        funcionario.setFuncao(SCANNER.nextLine());
 
-        repositorio.getFuncionarios().add(funcionario);
-        repositorio.getFuncoesFuncionarios().put(funcionario.getFuncao().toLowerCase(), funcionario);
+        funcionarios.add(funcionario);
+        funcoesFuncionarios.put(funcionario.getFuncao().toLowerCase(), funcionario);
         System.out.println("Funcionário criado com sucesso.");
     }
 

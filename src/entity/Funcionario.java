@@ -10,12 +10,6 @@ public class Funcionario extends Pessoa{
     public Funcionario() {
     }
 
-    public Funcionario(String nome, LocalDate dataNascimento, String funcao, BigDecimal salario) {
-        super(nome, dataNascimento);
-        this.funcao = funcao;
-        this.salario = salario;
-    }
-
     public String getFuncao() {
         return funcao;
     }
